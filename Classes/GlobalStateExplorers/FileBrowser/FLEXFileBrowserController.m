@@ -11,7 +11,6 @@
 #import "FLEXWebViewController.h"
 #import "FLEXActivityViewController.h"
 #import "FLEXImagePreviewViewController.h"
-#import "FLEXTableListViewController.h"
 #import "FLEXObjectExplorerFactory.h"
 #import "FLEXObjectExplorerViewController.h"
 #import <mach-o/loader.h>
@@ -319,8 +318,6 @@ typedef NS_ENUM(NSUInteger, FLEXFileBrowserSortAttribute) {
             drillInViewController = [[FLEXWebViewController alloc] initWithText:prettyString];
         } else if ([FLEXWebViewController supportsPathExtension:pathExtension]) {
             drillInViewController = [[FLEXWebViewController alloc] initWithURL:[NSURL fileURLWithPath:fullPath]];
-        } else if ([FLEXTableListViewController supportsExtension:pathExtension]) {
-            drillInViewController = [[FLEXTableListViewController alloc] initWithPath:fullPath];
         }
         else if (!drillInViewController) {
             NSString *fileString = [NSString stringWithUTF8String:fileData.bytes];
