@@ -7,7 +7,9 @@ enum FLEXBuildOptions {
     static let silenceWarnings = false
 }
 
-#if swift(>=5.7)
+#if swift(>=5.9)
+let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v12)]
+#elseif swift(>=5.7)
 let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v11)]
 #else
 let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v10)]
@@ -33,7 +35,12 @@ let package = Package(
                 "GlobalStateExplorers/SystemLog/LLVM_LICENSE.TXT",
             ],
             publicHeadersPath: "Headers",
-            cSettings: .headerSearchPaths + .warningFlags
+            cSettings: .headerSearchPaths + .warningFlags,
+            linkerSettings: [
+                .linkedFramework("CoreGraphics"),
+                .linkedLibrary("sqlite3"),
+                .linkedLibrary("z"),
+            ]
         )
     ],
     // Required to compile FLEXSwiftInternal.mm
@@ -49,10 +56,10 @@ extension Array where Element == CSetting {
                 "-Wno-unsupported-availability-guard",
             ])]
         }
-        
+
         return []
     }
-    
+
     /// These are the header search paths needed for FLEX to compile, not
     /// the headers used by projects linking against FLEX.
     ///
