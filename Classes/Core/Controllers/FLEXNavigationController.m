@@ -134,11 +134,14 @@
     }
     
     // Give root view controllers a Done button if it does not already have one
+    UIImage *closeImage = [UIImage systemImageNamed:@"xmark"];
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+        initWithImage:closeImage
+        style:UIBarButtonItemStylePlain
         target:self
         action:@selector(dismissAnimated)
     ];
+    done.tintColor = UIColor.systemRedColor;
     
     // Prepend the button if other buttons exist already
     NSArray *existingItems = navigationItem.rightBarButtonItems;

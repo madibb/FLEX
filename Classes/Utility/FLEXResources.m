@@ -64,15 +64,15 @@
 }
 
 + (UIImage *)globalsIcon {
-    return [self toolbarSymbol:@"list.bullet"];
+    return [self toolbarSymbol:@"line.3.horizontal"];
 }
 
 + (UIImage *)hierarchyIcon {
-    return [self toolbarSymbol:@"square.stack.3d.up"];
+    return [self toolbarSymbol:@"square.grid.2x2"];
 }
 
 + (UIImage *)recentIcon {
-    return [self toolbarSymbol:@"clock"];
+    return [self toolbarSymbol:@"doc.badge.clock"];
 }
 
 + (UIImage *)moveIcon {
