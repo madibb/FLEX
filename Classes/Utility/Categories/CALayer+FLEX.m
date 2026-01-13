@@ -11,16 +11,11 @@
 @implementation CALayer (FLEX)
 
 - (BOOL)flex_continuousCorners {
-    if (@available(iOS 13, *)) {
-        return self.cornerCurve == kCACornerCurveContinuous;
-    }
-    return NO;
+    return self.cornerCurve == kCACornerCurveContinuous;
 }
 
 - (void)setFlex_continuousCorners:(BOOL)enabled {
-    if (@available(iOS 13, *)) {
-        self.cornerCurve = enabled ? kCACornerCurveContinuous : kCACornerCurveCircular;
-    }
+    self.cornerCurve = enabled ? kCACornerCurveContinuous : kCACornerCurveCircular;
 }
 
 @end

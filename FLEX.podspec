@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
 
   spec.license          = { :type => "BSD", :file => "LICENSE" }
   spec.author           = { "Tanner Bennett" => "tannerbennett@me.com" }
-  spec.platform         = :ios, "9.0"
+  spec.platform         = :ios, "16.0"
   spec.source           = { :git => "https://github.com/FLEXTool/FLEX.git", :tag => "#{spec.version}" }
   spec.source_files     = "Classes/**/*.{h,c,m,mm}"
   spec.exclude_files    = "Classes/Headers/*.{h,c,m,mm}"
@@ -39,7 +39,7 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {
        'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++11',
   }
-  spec.compiler_flags   = "-Wno-unsupported-availability-guard", "-Wno-deprecated-declarations"
+  spec.compiler_flags   = "-Wno-deprecated-declarations"
   spec.public_header_files = [ "Classes/*.h", "Classes/Manager/*.h", "Classes/Toolbar/*.h",
                                "Classes/Core/Controllers/*.h", "Classes/Core/Views/*.h",
                                "Classes/Core/Views/Cells/*.h", "Classes/Core/*.h", 

@@ -140,9 +140,34 @@ This document tracks changes made to reduce the FLEX library size.
 | toggle2DIcon | square |
 | toggle3DIcon | cube |
 
-**Requirements:** iOS 13+ (SF Symbols availability)
+**Requirements:** iOS 16+ (minimum deployment target)
 
 **Impact:** Low - Visual appearance may differ slightly but functionality identical
+
+---
+
+### 6. iOS 16+ Minimum Deployment Target
+
+**Changes made:**
+- Updated minimum deployment target from iOS 9 to iOS 16
+- Removed all `@available(iOS X, *)` version checks for iOS versions < 16
+- Removed all `API_AVAILABLE(ios(X))` annotations for iOS versions < 16
+- Simplified code paths that were conditional on older iOS versions
+- Updated Package.swift, FLEX.podspec, and project.pbxproj
+- Removed `-Wno-unsupported-availability-guard` compiler flag (no longer needed)
+
+**APIs now used unconditionally:**
+- `UIWindowScene` (iOS 13+)
+- `NSURLSessionWebSocketTask` (iOS 13+)
+- `UIMenu` and context menus (iOS 13+)
+- `UISelectionFeedbackGenerator` (iOS 10+)
+- `UNUserNotificationCenter` (iOS 10+)
+- `NSKeyedUnarchiver` secure coding APIs (iOS 12+)
+- `WKWebViewConfiguration.dataDetectorTypes` (iOS 10+)
+- `NSDirectionalEdgeInsets` (iOS 11+)
+- `UIScrollView.adjustedContentInset` (iOS 11+)
+
+**Impact:** None - all removed checks were for iOS versions below 16
 
 ---
 
@@ -208,7 +233,8 @@ After these removals, FLEX still provides:
 - All changes maintain backward compatibility for remaining features
 - No public API changes for retained functionality
 - Build tested after each removal phase
-- SF Symbols migration requires iOS 13+ (FLEX already requires iOS 12+, should update minimum deployment target)
+- Minimum deployment target updated to iOS 16+
+- Removed all iOS version checks and API_AVAILABLE annotations for older versions
 
 ## Size Comparison
 

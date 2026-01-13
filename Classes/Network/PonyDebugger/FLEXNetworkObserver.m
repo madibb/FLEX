@@ -74,13 +74,13 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask delegate:(id<NSUR
 - (void)URLSessionTaskWillResume:(NSURLSessionTask *)task;
 
 - (void)websocketTask:(NSURLSessionWebSocketTask *)task
-        sendMessagage:(NSURLSessionWebSocketMessage *)message API_AVAILABLE(ios(13.0));
+        sendMessagage:(NSURLSessionWebSocketMessage *)message;
 - (void)websocketTaskMessageSendCompletion:(NSURLSessionWebSocketMessage *)message
-                                     error:(NSError *)error API_AVAILABLE(ios(13.0));
+                                     error:(NSError *)error;
 
 - (void)websocketTask:(NSURLSessionWebSocketTask *)task
      receiveMessagage:(NSURLSessionWebSocketMessage *)message
-                error:(NSError *)error API_AVAILABLE(ios(13.0));
+                error:(NSError *)error;
 
 @end
 
@@ -545,14 +545,12 @@ static FIRDocumentReference * _logos_method$_ungrouped$FIRCollectionReference$ad
             [self injectIntoNSURLSessionAsyncUploadTaskMethods:URLSessionLocal];
         }
         
-        if (@available(iOS 13.0, *)) {
-            Class websocketTask = NSClassFromString(@"__NSURLSessionWebSocketTask");
-            [self injectWebsocketSendMessage:websocketTask];
-            [self injectWebsocketReceiveMessage:websocketTask];
-            websocketTask = [NSURLSessionWebSocketTask class];
-            [self injectWebsocketSendMessage:websocketTask];
-            [self injectWebsocketReceiveMessage:websocketTask];
-        }
+        Class websocketTask = NSClassFromString(@"__NSURLSessionWebSocketTask");
+        [self injectWebsocketSendMessage:websocketTask];
+        [self injectWebsocketReceiveMessage:websocketTask];
+        websocketTask = [NSURLSessionWebSocketTask class];
+        [self injectWebsocketSendMessage:websocketTask];
+        [self injectWebsocketReceiveMessage:websocketTask];
     });
 }
 
@@ -666,21 +664,18 @@ static FIRDocumentReference * _logos_method$_ungrouped$FIRCollectionReference$ad
     SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
     Method originalResume = class_getInstanceMethod(class, selector);
     IMP implementation = imp_implementationWithBlock(^(NSURLSessionTask *slf) {
-        
-        if (@available(iOS 11.0, *)) {
-            // AVAggregateAssetDownloadTask deeply does not like to be looked at. Accessing -currentRequest or
-            // -originalRequest will crash. Do not try to observe these. https://github.com/FLEXTool/FLEX/issues/276
-            if (![slf isKindOfClass:[AVAggregateAssetDownloadTask class]]) {
-                // iOS's internal HTTP parser finalization code is mysteriously not thread safe,
-                // invoking it asynchronously has a chance to cause a `double free` crash.
-                // This line below will ask for HTTPBody synchronously, make the HTTPParser
-                // parse the request, and cache them in advance. After that the HTTPParser
-                // will be finalized. Make sure other threads inspecting the request
-                // won't trigger a race to finalize the parser.
-                [slf.currentRequest HTTPBody];
+        // AVAggregateAssetDownloadTask deeply does not like to be looked at. Accessing -currentRequest or
+        // -originalRequest will crash. Do not try to observe these. https://github.com/FLEXTool/FLEX/issues/276
+        if (![slf isKindOfClass:[AVAggregateAssetDownloadTask class]]) {
+            // iOS's internal HTTP parser finalization code is mysteriously not thread safe,
+            // invoking it asynchronously has a chance to cause a `double free` crash.
+            // This line below will ask for HTTPBody synchronously, make the HTTPParser
+            // parse the request, and cache them in advance. After that the HTTPParser
+            // will be finalized. Make sure other threads inspecting the request
+            // won't trigger a race to finalize the parser.
+            [slf.currentRequest HTTPBody];
 
-                [FLEXNetworkObserver.sharedObserver URLSessionTaskWillResume:slf];
-            }
+            [FLEXNetworkObserver.sharedObserver URLSessionTaskWillResume:slf];
         }
 
         ((void(*)(id, SEL))objc_msgSend)(
@@ -1604,7 +1599,7 @@ static FIRDocumentReference * _logos_method$_ungrouped$FIRCollectionReference$ad
     ];
 }
 
-+ (void)injectWebsocketSendMessage:(Class)cls API_AVAILABLE(ios(13.0)) {
++ (void)injectWebsocketSendMessage:(Class)cls {
     SEL selector = @selector(sendMessage:completionHandler:);
     SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
 
@@ -1645,7 +1640,7 @@ static FIRDocumentReference * _logos_method$_ungrouped$FIRCollectionReference$ad
     ];
 }
 
-+ (void)injectWebsocketReceiveMessage:(Class)cls API_AVAILABLE(ios(13.0)) {
++ (void)injectWebsocketReceiveMessage:(Class)cls {
     SEL selector = @selector(receiveMessageWithCompletionHandler:);
     SEL swizzledSelector = [FLEXUtility swizzledSelectorForSelector:selector];
 
@@ -1987,12 +1982,10 @@ didFinishDownloadingToURL:(NSURL *)location data:(NSData *)data
 }
 
 - (void)URLSessionTaskWillResume:(NSURLSessionTask *)task {
-    if (@available(iOS 11.0, *)) {
-        // AVAggregateAssetDownloadTask deeply does not like to be looked at. Accessing -currentRequest or
-        // -originalRequest will crash. Do not try to observe these. https://github.com/FLEXTool/FLEX/issues/276
-        if ([task isKindOfClass:[AVAggregateAssetDownloadTask class]]) {
-            return;
-        }
+    // AVAggregateAssetDownloadTask deeply does not like to be looked at. Accessing -currentRequest or
+    // -originalRequest will crash. Do not try to observe these. https://github.com/FLEXTool/FLEX/issues/276
+    if ([task isKindOfClass:[AVAggregateAssetDownloadTask class]]) {
+        return;
     }
 
     // Since resume can be called multiple times on the same task, only treat the first resume as

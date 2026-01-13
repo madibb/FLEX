@@ -7,14 +7,8 @@ enum FLEXBuildOptions {
     static let silenceWarnings = false
 }
 
-// SF Symbols require iOS 13+
-#if swift(>=5.9)
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v13)]
-#elseif swift(>=5.7)
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v13)]
-#else
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v13)]
-#endif
+// Minimum iOS 16 for modern APIs and SF Symbols 4
+let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v16)]
 
 let package = Package(
     name: "FLEX",
@@ -51,7 +45,6 @@ extension Array where Element == CSetting {
             return [.unsafeFlags([
                 "-Wno-deprecated-declarations",
                 "-Wno-strict-prototypes",
-                "-Wno-unsupported-availability-guard",
             ])]
         }
 
