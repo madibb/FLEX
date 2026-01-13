@@ -40,31 +40,23 @@
 }
 
 + (UIImage *)dragHandle {
-    // Create a simple drag handle programmatically (5 rows of dots)
-    CGSize size = CGSizeMake(80, 20);
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    // Create drag handle with padding so toolbar has proper spacing
+    CGFloat padding = 16.0;
+    UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration
+        configurationWithPointSize:22 weight:UIImageSymbolWeightRegular];
+    UIImage *symbol = [UIImage systemImageNamed:@"line.3.horizontal" withConfiguration:config];
 
-    [[UIColor colorWithWhite:0.5 alpha:1.0] setFill];
-
-    CGFloat dotRadius = 2.0;
-    CGFloat spacing = 8.0;
-    CGFloat startX = (size.width - (9 * spacing)) / 2;
-    CGFloat y = size.height / 2;
-
-    for (int i = 0; i < 10; i++) {
-        CGFloat x = startX + (i * spacing);
-        CGContextFillEllipseInRect(ctx, CGRectMake(x - dotRadius, y - dotRadius, dotRadius * 2, dotRadius * 2));
-    }
-
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    CGSize newSize = CGSizeMake(symbol.size.width + padding * 2, symbol.size.height);
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0);
+    [symbol drawInRect:CGRectMake(padding, 0, symbol.size.width, symbol.size.height)];
+    UIImage *paddedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
-    return [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    return [paddedImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 + (UIImage *)globalsIcon {
-    return [self toolbarSymbol:@"line.3.horizontal"];
+    return [self toolbarSymbol:@"wrench"];
 }
 
 + (UIImage *)hierarchyIcon {

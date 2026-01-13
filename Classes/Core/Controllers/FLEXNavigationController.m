@@ -126,9 +126,9 @@
         return;
     }
     
-    // Check if a done item already exists
+    // Check if a close/done item already exists (red tinted or xmark image)
     for (UIBarButtonItem *item in navigationItem.rightBarButtonItems) {
-        if (item.style == UIBarButtonItemStyleDone) {
+        if ([item.tintColor isEqual:UIColor.systemRedColor] || item.image != nil) {
             return;
         }
     }

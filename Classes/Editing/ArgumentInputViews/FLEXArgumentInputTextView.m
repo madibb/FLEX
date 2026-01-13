@@ -62,10 +62,12 @@
         initWithTitle:@"Paste" style:UIBarButtonItemStyleDone
         target:self.inputTextView action:@selector(paste:)
     ];
+    UIImage *closeImage = [UIImage systemImageNamed:@"xmark"];
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+        initWithImage:closeImage style:UIBarButtonItemStylePlain
         target:self.inputTextView action:@selector(resignFirstResponder)
     ];
+    doneItem.tintColor = UIColor.systemRedColor;
     toolBar.items = @[spaceItem, pasteItem, doneItem];
     return toolBar;
 }
