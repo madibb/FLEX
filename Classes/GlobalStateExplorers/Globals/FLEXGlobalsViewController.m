@@ -9,8 +9,6 @@
 #import "FLEXGlobalsViewController.h"
 #import "FLEXUtility.h"
 #import "FLEXRuntimeUtility.h"
-#import "FLEXObjcRuntimeViewController.h"
-#import "FLEXKeychainViewController.h"
 #import "FLEXAPNSViewController.h"
 #import "FLEXObjectExplorerViewController.h"
 #import "FLEXObjectExplorerFactory.h"
@@ -19,7 +17,6 @@
 #import "FLEXCookiesViewController.h"
 #import "FLEXGlobalsEntry.h"
 #import "FLEXManager+Private.h"
-#import "FLEXSystemLogViewController.h"
 #import "FLEXNetworkMITMViewController.h"
 #import "FLEXAddressExplorerCoordinator.h"
 #import "FLEXGlobalsSection.h"
@@ -56,14 +53,10 @@
 
 + (FLEXGlobalsEntry *)globalsEntryForRow:(FLEXGlobalsRow)row {
     switch (row) {
-        case FLEXGlobalsRowAppKeychainItems:
-            return [FLEXKeychainViewController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowPushNotifications:
             return [FLEXAPNSViewController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowAddressInspector:
             return [FLEXAddressExplorerCoordinator flex_concreteGlobalsEntry:row];
-        case FLEXGlobalsRowBrowseRuntime:
-            return [FLEXObjcRuntimeViewController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowLiveObjects:
             return [FLEXLiveObjectsController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowCookies:
@@ -71,8 +64,6 @@
         case FLEXGlobalsRowBrowseBundle:
         case FLEXGlobalsRowBrowseContainer:
             return [FLEXFileBrowserController flex_concreteGlobalsEntry:row];
-        case FLEXGlobalsRowSystemLog:
-            return [FLEXSystemLogViewController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowNetworkHistory:
             return [FLEXNetworkMITMViewController flex_concreteGlobalsEntry:row];
         case FLEXGlobalsRowKeyWindow:
@@ -114,18 +105,15 @@
         NSDictionary<NSNumber *, NSArray<FLEXGlobalsEntry *> *> *rowsBySection = @{
             @(FLEXGlobalsSectionProcessAndEvents) : @[
                 [self globalsEntryForRow:FLEXGlobalsRowNetworkHistory],
-                [self globalsEntryForRow:FLEXGlobalsRowSystemLog],
                 [self globalsEntryForRow:FLEXGlobalsRowProcessInfo],
                 [self globalsEntryForRow:FLEXGlobalsRowLiveObjects],
                 [self globalsEntryForRow:FLEXGlobalsRowAddressInspector],
-                [self globalsEntryForRow:FLEXGlobalsRowBrowseRuntime],
             ],
             @(FLEXGlobalsSectionAppShortcuts) : @[
                 [self globalsEntryForRow:FLEXGlobalsRowBrowseBundle],
                 [self globalsEntryForRow:FLEXGlobalsRowBrowseContainer],
                 [self globalsEntryForRow:FLEXGlobalsRowMainBundle],
                 [self globalsEntryForRow:FLEXGlobalsRowUserDefaults],
-                [self globalsEntryForRow:FLEXGlobalsRowAppKeychainItems],
                 [self globalsEntryForRow:FLEXGlobalsRowPushNotifications],
                 [self globalsEntryForRow:FLEXGlobalsRowApplication],
                 [self globalsEntryForRow:FLEXGlobalsRowAppDelegate],

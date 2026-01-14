@@ -32,13 +32,10 @@
         self.inputTextView.autocorrectionType = UITextAutocorrectionTypeNo;
         self.inputTextView.delegate = self;
         self.inputTextView.inputAccessoryView = [self createToolBar];
-        if (@available(iOS 11, *)) {
-            self.inputTextView.smartQuotesType = UITextSmartQuotesTypeNo;
-            [self.inputTextView.layer setValue:@YES forKey:@"continuousCorners"];
-        } else {
-            self.inputTextView.layer.borderWidth = 1.f;
-            self.inputTextView.layer.borderColor = FLEXColor.borderColor.CGColor;
-        }
+        self.inputTextView.smartQuotesType = UITextSmartQuotesTypeNo;
+        self.inputTextView.layer.cornerCurve = kCACornerCurveContinuous;
+        self.inputTextView.layer.borderWidth = 1.f;
+        self.inputTextView.layer.borderColor = FLEXColor.borderColor.CGColor;
 
         self.placeholderLabel = [UILabel new];
         self.placeholderLabel.font = self.inputTextView.font;
@@ -65,10 +62,12 @@
         initWithTitle:@"Paste" style:UIBarButtonItemStyleDone
         target:self.inputTextView action:@selector(paste:)
     ];
+    UIImage *closeImage = [UIImage systemImageNamed:@"xmark"];
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+        initWithImage:closeImage style:UIBarButtonItemStylePlain
         target:self.inputTextView action:@selector(resignFirstResponder)
     ];
+    doneItem.tintColor = UIColor.systemRedColor;
     toolBar.items = @[spaceItem, pasteItem, doneItem];
     return toolBar;
 }

@@ -13,12 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, FLEXGlobalsRow) {
     FLEXGlobalsRowProcessInfo,
     FLEXGlobalsRowNetworkHistory,
-    FLEXGlobalsRowSystemLog,
     FLEXGlobalsRowLiveObjects,
     FLEXGlobalsRowAddressInspector,
     FLEXGlobalsRowCookies,
-    FLEXGlobalsRowBrowseRuntime,
-    FLEXGlobalsRowAppKeychainItems,
     FLEXGlobalsRowPushNotifications,
     FLEXGlobalsRowAppDelegate,
     FLEXGlobalsRowRootViewController,

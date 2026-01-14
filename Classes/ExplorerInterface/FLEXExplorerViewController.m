@@ -61,8 +61,8 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
 /// A colored transparent overlay to indicate that the view is selected.
 @property (nonatomic) UIView *selectedViewOverlay;
 
-/// Used to actuate changes in view selection on iOS 10+
-@property (nonatomic, readonly) UISelectionFeedbackGenerator *selectionFBG API_AVAILABLE(ios(10.0));
+/// Used to actuate changes in view selection
+@property (nonatomic, readonly) UISelectionFeedbackGenerator *selectionFBG;
 
 /// self.view.window as a \c FLEXWindow
 @property (nonatomic, readonly) FLEXWindow *window;
@@ -126,10 +126,8 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
     [self.view addGestureRecognizer:self.movePanGR];
     
     // Feedback
-    if (@available(iOS 10.0, *)) {
-        _selectionFBG = [UISelectionFeedbackGenerator new];
-    }
-    
+    _selectionFBG = [UISelectionFeedbackGenerator new];
+
     // Observe keyboard to move self out of the way
     [NSNotificationCenter.defaultCenter
         addObserver:self
@@ -429,11 +427,7 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
 }
 
 - (UIWindow *)statusWindow {
-    if (!@available(iOS 16, *)) {
-        NSString *statusBarString = [NSString stringWithFormat:@"%@arWindow", @"_statusB"];
-        return [UIApplication.sharedApplication valueForKey:statusBarString];
-    }
-    
+    // Status bar window no longer accessible on iOS 16+
     return nil;
 }
 
@@ -684,9 +678,7 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
 }
 
 - (void)actuateSelectionChangedFeedback {
-    if (@available(iOS 10.0, *)) {
-        [self.selectionFBG selectionChanged];
-    }
+    [self.selectionFBG selectionChanged];
 }
 
 - (void)updateOutlineViewsForSelectionPoint:(CGPoint)selectionPointInWindow {
@@ -823,29 +815,22 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
 #pragma mark - Safe Area Handling
 
 - (CGRect)viewSafeArea {
-    CGRect safeArea = self.view.bounds;
-    if (@available(iOS 11.0, *)) {
-        safeArea = UIEdgeInsetsInsetRect(self.view.bounds, self.view.safeAreaInsets);
-    }
-
-    return safeArea;
+    return UIEdgeInsetsInsetRect(self.view.bounds, self.view.safeAreaInsets);
 }
 
 - (void)viewSafeAreaInsetsDidChange {
-    if (@available(iOS 11.0, *)) {
-        [super viewSafeAreaInsetsDidChange];
+    [super viewSafeAreaInsetsDidChange];
 
-        CGRect safeArea = [self viewSafeArea];
-        CGSize toolbarSize = [self.explorerToolbar sizeThatFits:CGSizeMake(
-            CGRectGetWidth(self.view.bounds), CGRectGetHeight(safeArea)
-        )];
-        [self updateToolbarPositionWithUnconstrainedFrame:CGRectMake(
-            CGRectGetMinX(self.explorerToolbar.frame),
-            CGRectGetMinY(self.explorerToolbar.frame),
-            toolbarSize.width,
-            toolbarSize.height)
-        ];
-    }
+    CGRect safeArea = [self viewSafeArea];
+    CGSize toolbarSize = [self.explorerToolbar sizeThatFits:CGSizeMake(
+        CGRectGetWidth(self.view.bounds), CGRectGetHeight(safeArea)
+    )];
+    [self updateToolbarPositionWithUnconstrainedFrame:CGRectMake(
+        CGRectGetMinX(self.explorerToolbar.frame),
+        CGRectGetMinY(self.explorerToolbar.frame),
+        toolbarSize.width,
+        toolbarSize.height)
+    ];
 }
 
 
@@ -915,47 +900,36 @@ typedef NS_ENUM(NSUInteger, FLEXExplorerMode) {
     // Make our window key to correctly handle input.
     [self.view.window makeKeyWindow];
 
-    // Move the status bar on top of FLEX so we can get scroll to top behavior for taps.
-    if (!@available(iOS 13, *)) {
-        [self statusWindow].windowLevel = self.view.window.windowLevel + 1.0;
-    }
-    
     // Back up and replace the UIMenuController items
     // Edit: no longer replacing the items, but still backing them
     // up in case we start replacing them again in the future
     self.appMenuItems = UIMenuController.sharedMenuController.menuItems;
-    
+
     [self updateButtonStates];
-    
+
     // Show the view controller
     [super presentViewController:toPresent animated:animated completion:^{
         [self updateButtonStates];
-        
+
         if (completion) completion();
     }];
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion {    
+- (void)dismissViewControllerAnimated:(BOOL)animated completion:(void (^)(void))completion {
     UIWindow *appWindow = self.window.previousKeyWindow;
     [appWindow makeKeyWindow];
     [appWindow.rootViewController setNeedsStatusBarAppearanceUpdate];
-    
+
     // Restore previous UIMenuController items
-    // Back up and replace the UIMenuController items
     UIMenuController.sharedMenuController.menuItems = self.appMenuItems;
     [UIMenuController.sharedMenuController update];
     self.appMenuItems = nil;
-    
-    // Restore the status bar window's normal window level.
-    // We want it above FLEX while a modal is presented for
-    // scroll to top, but below FLEX otherwise for exploration.
-    [self statusWindow].windowLevel = UIWindowLevelStatusBar;
-    
+
     [self updateButtonStates];
-    
+
     [super dismissViewControllerAnimated:animated completion:^{
         [self updateButtonStates];
-        
+
         if (completion) completion();
     }];
 }

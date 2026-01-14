@@ -219,12 +219,9 @@ static NSMutableDictionary<id<NSCopying>, Class> *classesToRegisteredSections = 
         }
         
         case FLEXGlobalsRowNetworkHistory:
-        case FLEXGlobalsRowSystemLog:
         case FLEXGlobalsRowLiveObjects:
         case FLEXGlobalsRowAddressInspector:
         case FLEXGlobalsRowCookies:
-        case FLEXGlobalsRowBrowseRuntime:
-        case FLEXGlobalsRowAppKeychainItems:
         case FLEXGlobalsRowPushNotifications:
         case FLEXGlobalsRowBrowseBundle:
         case FLEXGlobalsRowBrowseContainer:

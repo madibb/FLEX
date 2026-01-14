@@ -28,14 +28,9 @@
     
     self.append.classProperties(@[@"sharedApplication"]).forClass(UIApplication.flex_metaclass);
     self.append.properties(@[
-        @"delegate", @"keyWindow", @"windows"
+        @"delegate", @"keyWindow", @"windows",
+        @"connectedScenes", @"openSessions", @"supportsMultipleScenes"
     ]).forClass(UIApplication.class);
-
-    if (@available(iOS 13, *)) {
-        self.append.properties(@[
-            @"connectedScenes", @"openSessions", @"supportsMultipleScenes"
-        ]).forClass(UIApplication.class);
-    }
 }
 
 @end
@@ -97,12 +92,8 @@
         @"frame", @"bounds", @"center", @"transform",
         @"backgroundColor", @"alpha", @"opaque", @"hidden",
         @"clipsToBounds", @"userInteractionEnabled", @"layer",
-        @"subviews"
+        @"subviews", @"windowScene"
     ]).forClass(UIWindow.class);
-
-    if (@available(iOS 13, *)) {
-        self.append.properties(@[@"windowScene"]).forClass(UIWindow.class);
-    }
 
     ivars = @[@"_targetActions", @"_gestureRecognizers"];
     
@@ -156,15 +147,11 @@
         .forClass(UIViewController.class);
     
     // UIAlertController
-    NSMutableArray *alertControllerProps = @[
-        @"title", @"message", @"actions", @"textFields",
-        @"preferredAction", @"presentingViewController", @"viewIfLoaded",
-    ].mutableCopy;
-    if (@available(iOS 14.0, *)) {
-        [alertControllerProps insertObject:@"image" atIndex:4];
-    }
     self.append
-        .properties(alertControllerProps)
+        .properties(@[
+            @"title", @"message", @"actions", @"textFields", @"image",
+            @"preferredAction", @"presentingViewController", @"viewIfLoaded",
+        ])
         .methods(@[@"addAction:"])
         .forClass(UIAlertController.class);
     self.append.properties(@[
@@ -185,12 +172,8 @@
         @"CGImage", @"CIImage"
     ]).properties(@[
         @"scale", @"size", @"capInsets",
-        @"alignmentRectInsets", @"duration", @"images"
+        @"alignmentRectInsets", @"duration", @"images", @"symbolImage"
     ]).forClass(UIImage.class);
-
-    if (@available(iOS 13, *)) {
-        self.append.properties(@[@"symbolImage"]).forClass(UIImage.class);
-    }
 }
 
 @end
@@ -382,18 +365,9 @@
     
     if (SafariVC) {
         self.append.properties(@[
-            @"delegate"
+            @"delegate", @"preferredBarTintColor", @"preferredControlTintColor",
+            @"configuration", @"dismissButtonStyle"
         ]).forClass(SafariVC);
-        if (@available(iOS 10.0, *)) {
-            self.append.properties(@[
-                @"preferredBarTintColor", @"preferredControlTintColor"
-            ]).forClass(SafariVC);
-        }
-        if (@available(iOS 11.0, *)) {
-            self.append.properties(@[
-                @"configuration", @"dismissButtonStyle"
-            ]).forClass(SafariVC);
-        }
     }
 }
 

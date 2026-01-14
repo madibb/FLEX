@@ -7,13 +7,8 @@ enum FLEXBuildOptions {
     static let silenceWarnings = false
 }
 
-#if swift(>=5.9)
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v12)]
-#elseif swift(>=5.7)
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v11)]
-#else
-let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v10)]
-#endif
+// Minimum iOS 16 for modern APIs and SF Symbols 4
+let platforms: [PackageDescription.SupportedPlatform] = [.iOS(.v16)]
 
 let package = Package(
     name: "FLEX",
@@ -30,9 +25,6 @@ let package = Package(
                 "Utility/APPLE_LICENSE",
                 "Network/OSCache/LICENSE.md",
                 "Network/PonyDebugger/LICENSE",
-                "GlobalStateExplorers/DatabaseBrowser/LICENSE",
-                "GlobalStateExplorers/Keychain/SSKeychain_LICENSE",
-                "GlobalStateExplorers/SystemLog/LLVM_LICENSE.TXT",
             ],
             publicHeadersPath: "Headers",
             cSettings: .headerSearchPaths + .warningFlags,
@@ -53,7 +45,6 @@ extension Array where Element == CSetting {
             return [.unsafeFlags([
                 "-Wno-deprecated-declarations",
                 "-Wno-strict-prototypes",
-                "-Wno-unsupported-availability-guard",
             ])]
         }
 
@@ -91,12 +82,7 @@ extension Array where Element == CSetting {
             .headerSearchPath("ExplorerInterface/Bookmarks"),
             .headerSearchPath("GlobalStateExplorers"),
             .headerSearchPath("GlobalStateExplorers/Globals"),
-            .headerSearchPath("GlobalStateExplorers/Keychain"),
             .headerSearchPath("GlobalStateExplorers/FileBrowser"),
-            .headerSearchPath("GlobalStateExplorers/SystemLog"),
-            .headerSearchPath("GlobalStateExplorers/DatabaseBrowser"),
-            .headerSearchPath("GlobalStateExplorers/RuntimeBrowser"),
-            .headerSearchPath("GlobalStateExplorers/RuntimeBrowser/DataSources"),
             .headerSearchPath("ViewHierarchy"),
             .headerSearchPath("ViewHierarchy/SnapshotExplorer"),
             .headerSearchPath("ViewHierarchy/SnapshotExplorer/Scene"),

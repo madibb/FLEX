@@ -48,41 +48,35 @@
     [self.navigationBar addGestureRecognizer:navbarTapGesture];
     
     // Add gesture to dismiss if not presented with a sheet style
-    if (@available(iOS 13, *)) {
-        switch (self.modalPresentationStyle) {
-            case UIModalPresentationAutomatic:
-            case UIModalPresentationPageSheet:
-            case UIModalPresentationFormSheet:
-                break;
-                
-            default:
-                [self addNavigationBarSwipeGesture];
-                break;
-        }
-    } else {
-        [self addNavigationBarSwipeGesture];
+    switch (self.modalPresentationStyle) {
+        case UIModalPresentationAutomatic:
+        case UIModalPresentationPageSheet:
+        case UIModalPresentationFormSheet:
+            break;
+
+        default:
+            [self addNavigationBarSwipeGesture];
+            break;
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    if (@available(iOS 15.0, *)) {
-        UISheetPresentationController *presenter = self.sheetPresentationController;
-        presenter.detents = @[
-            UISheetPresentationControllerDetent.mediumDetent,
-            UISheetPresentationControllerDetent.largeDetent,
-        ];
-        presenter.prefersScrollingExpandsWhenScrolledToEdge = NO;
-        presenter.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
-        presenter.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
-    }
-    
+
+    UISheetPresentationController *presenter = self.sheetPresentationController;
+    presenter.detents = @[
+        UISheetPresentationControllerDetent.mediumDetent,
+        UISheetPresentationControllerDetent.largeDetent,
+    ];
+    presenter.prefersScrollingExpandsWhenScrolledToEdge = NO;
+    presenter.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+    presenter.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+
     if (self.beingPresented && !self.didSetupPendingDismissButtons) {
         for (UIViewController *vc in self.viewControllers) {
             [self addNavigationBarItemsToViewController:vc.navigationItem];
         }
-        
+
         self.didSetupPendingDismissButtons = YES;
     }
 }
@@ -132,19 +126,22 @@
         return;
     }
     
-    // Check if a done item already exists
+    // Check if a close/done item already exists (red tinted or xmark image)
     for (UIBarButtonItem *item in navigationItem.rightBarButtonItems) {
-        if (item.style == UIBarButtonItemStyleDone) {
+        if ([item.tintColor isEqual:UIColor.systemRedColor] || item.image != nil) {
             return;
         }
     }
     
     // Give root view controllers a Done button if it does not already have one
+    UIImage *closeImage = [UIImage systemImageNamed:@"xmark"];
     UIBarButtonItem *done = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+        initWithImage:closeImage
+        style:UIBarButtonItemStylePlain
         target:self
         action:@selector(dismissAnimated)
     ];
+    done.tintColor = UIColor.systemRedColor;
     
     // Prepend the button if other buttons exist already
     NSArray *existingItems = navigationItem.rightBarButtonItems;

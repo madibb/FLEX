@@ -16,7 +16,7 @@
 @property (nonatomic, copy) NSString *keyWindowSubtitle;
 @property (nonatomic, copy) NSArray<UIWindow *> *windows;
 @property (nonatomic, copy) NSArray<NSString *> *windowSubtitles;
-@property (nonatomic, copy) NSArray<UIScene *> *scenes API_AVAILABLE(ios(13));
+@property (nonatomic, copy) NSArray<UIScene *> *scenes;
 @property (nonatomic, copy) NSArray<NSString *> *sceneSubtitles;
 @property (nonatomic, copy) NSArray<NSArray *> *sections;
 @end
@@ -31,12 +31,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.title = @"Windows";
-    if (@available(iOS 13, *)) {
-        self.title = @"Windows and Scenes";
-    }
-    
+
+    self.title = @"Windows and Scenes";
+
     [self disableToolbar];
     [self reloadData];
 }
@@ -54,17 +51,13 @@
         ];
     }];
     
-    if (@available(iOS 13, *)) {
-        self.scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
-        self.sceneSubtitles = [self.scenes flex_mapped:^id(UIScene *scene, NSUInteger idx) {
-            return [self sceneDescription:scene];
-        }];
-        
-        self.sections = @[@[self.keyWindow], self.windows, self.scenes];
-    } else {
-        self.sections = @[@[self.keyWindow], self.windows];
-    }
-    
+    self.scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
+    self.sceneSubtitles = [self.scenes flex_mapped:^id(UIScene *scene, NSUInteger idx) {
+        return [self sceneDescription:scene];
+    }];
+
+    self.sections = @[@[self.keyWindow], self.windows, self.scenes];
+
     [self.tableView reloadData];
 }
 
@@ -102,7 +95,7 @@
     } showFrom:[FLEXUtility topViewControllerInWindow:highestWindow]];
 }
 
-- (NSString *)sceneDescription:(UIScene *)scene API_AVAILABLE(ios(13)) {
+- (NSString *)sceneDescription:(UIScene *)scene {
     NSString *state = [self stringFromSceneState:scene.activationState];
     NSString *title = scene.title.length ? scene.title : nil;
     NSString *suffix = nil;
@@ -123,7 +116,7 @@
     return description.copy;
 }
 
-- (NSString *)stringFromSceneState:(UISceneActivationState)state API_AVAILABLE(ios(13)) {
+- (NSString *)stringFromSceneState:(UISceneActivationState)state {
     switch (state) {
         case UISceneActivationStateUnattached:
             return @"Unattached";
@@ -176,13 +169,12 @@
             window = self.windows[indexPath.row];
             subtitle = self.windowSubtitles[indexPath.row];
             break;
-        case 2:
-            if (@available(iOS 13, *)) {
-                UIScene *scene = self.scenes[indexPath.row];
-                cell.textLabel.text = scene.description;
-                cell.detailTextLabel.text = self.sceneSubtitles[indexPath.row];
-                return cell;
-            }
+        case 2: {
+            UIScene *scene = self.scenes[indexPath.row];
+            cell.textLabel.text = scene.description;
+            cell.detailTextLabel.text = self.sceneSubtitles[indexPath.row];
+            return cell;
+        }
     }
     
     cell.textLabel.text = window.description;
@@ -215,35 +207,35 @@
             window = self.windows[indexPath.row];
             subtitle = self.windowSubtitles[indexPath.row];
             break;
-        case 2:
-            if (@available(iOS 13, *)) {
-                UIScene *scene = self.scenes[indexPath.row];
-                UIWindowScene *oldScene = flex.windowScene;
-                BOOL isWindowScene = [scene isKindOfClass:[UIWindowScene class]];
-                BOOL isFLEXScene = isWindowScene ? flex.windowScene == scene : NO;
-                
-                [FLEXAlert makeAlert:^(FLEXAlert *make) {
-                    make.title(NSStringFromClass(scene.class));
-                    
-                    if (isWindowScene) {
-                        if (isFLEXScene) {
-                            make.message(@"Already the FLEX window scene");
-                        }
-                        
-                        make.button(@"Set as FLEX Window Scene")
-                        .handler(^(NSArray<NSString *> *strings) {
-                            flex.windowScene = (id)scene;
-                            [self showRevertOrDismissAlert:^{
-                                flex.windowScene = oldScene;
-                            }];
-                        }).enabled(!isFLEXScene);
-                        make.button(@"Cancel").cancelStyle();
-                    } else {
-                        make.message(@"Not a UIWindowScene");
-                        make.button(@"Dismiss").cancelStyle().handler(cancelHandler);
+        case 2: {
+            UIScene *scene = self.scenes[indexPath.row];
+            UIWindowScene *oldScene = flex.windowScene;
+            BOOL isWindowScene = [scene isKindOfClass:[UIWindowScene class]];
+            BOOL isFLEXScene = isWindowScene ? flex.windowScene == scene : NO;
+
+            [FLEXAlert makeAlert:^(FLEXAlert *make) {
+                make.title(NSStringFromClass(scene.class));
+
+                if (isWindowScene) {
+                    if (isFLEXScene) {
+                        make.message(@"Already the FLEX window scene");
                     }
-                } showFrom:self];
-            }
+
+                    make.button(@"Set as FLEX Window Scene")
+                    .handler(^(NSArray<NSString *> *strings) {
+                        flex.windowScene = (id)scene;
+                        [self showRevertOrDismissAlert:^{
+                            flex.windowScene = oldScene;
+                        }];
+                    }).enabled(!isFLEXScene);
+                    make.button(@"Cancel").cancelStyle();
+                } else {
+                    make.message(@"Not a UIWindowScene");
+                    make.button(@"Dismiss").cancelStyle().handler(cancelHandler);
+                }
+            } showFrom:self];
+            return;
+        }
     }
 
     __block UIWindow *targetWindow = nil, *oldKeyWindow = nil;
